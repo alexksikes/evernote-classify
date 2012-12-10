@@ -68,6 +68,10 @@ Teddy Note dataset. "sandbox_classify2" holds the 20 newsgroup dataset.
 
 - not just the 5 update notes ... more options
 - more datasets for testing, read from file
+- save to and read from ENML file instead
+  - use xml parser
+  - make_dataset takes ENML file or result
+  - classifier.py takes only the dataset as argument
 - better documentation (doctest)
 - use logging instead of print
 - use scikit standard namespace
