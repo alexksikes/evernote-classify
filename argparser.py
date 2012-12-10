@@ -83,7 +83,22 @@ COMMANDS_DICT = {
             "--content-search": {"altName": "-cs", "help": "Search by content, not by title.", "value": True, "default": False},
         }
     },
-
+    
+    # Classifier
+    "classify": {
+        "help": "Automatically classify the 5 most recently updated notes.",
+        "arguments": {
+            "--save-notes": {"altName": "-sn", "help": "Path to save fetched notes (for offline testing).", "default": False},
+        }
+    },
+    "train": {
+        "help": "Train a classifier on the most recently updated notes (omitting the first 5).",
+        "arguments": {
+            "--count": {"altName": "-cn", "help": "Maximum number of notes to train on (default 300)", "type": int, "default": 300},
+            "--save-notes": {"altName": "-sn", "help": "Path to save fetched notes (for offline testing).", "default": False},
+        }
+    },
+    
     # Notebooks
     "notebook-list": {
         "help": "Show the list of existing notebooks in your Evernote.",

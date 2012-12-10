@@ -36,6 +36,7 @@ from storage import Storage
 import editor
 import tools
 from log import logging
+import classifier
 
 
 # decorator to disable evernote connection on create instance of GeekNote
@@ -166,15 +167,17 @@ class GeekNote(object):
     WORK WITH NOTEST
     """
     @EdamException
-    def findNotes(self, keywords, count, createOrder=False):
+    def findNotes(self, keywords, count, offset=0, createOrder=False, updateOrder=False):
         
         noteFilter = NoteStore.NoteFilter(order=Types.NoteSortOrder.RELEVANCE)
         if createOrder:
             noteFilter.order = Types.NoteSortOrder.CREATED
-
+        elif updateOrder:
+            noteFilter.order = Types.NoteSortOrder.UPDATED
+            
         if keywords:
             noteFilter.words = keywords
-        return self.getNoteStore().findNotes(self.authToken, noteFilter, 0, count)
+        return self.getNoteStore().findNotes(self.authToken, noteFilter, offset, count)
 
     @EdamException
     def loadNoteContent(self, note):
@@ -647,7 +650,6 @@ class Notes(GeekNoteConnector):
         logging.debug("Selected note: %s" % str(note))
         return note
 
-
     def find(self, search=None, tags=None, notebooks=None, date=None, exact_entry=None, content_search=None, with_url=None, count=None, ):
 
         request = self._createSearchRequest(search, tags, notebooks, date, exact_entry, content_search)
@@ -668,8 +670,14 @@ class Notes(GeekNoteConnector):
         # save search result
         # print result
         self.getStorage().setSearch(result)
-
+        
         out.SearchResult(result.notes, request, showUrl=with_url)
+
+    def classify(self, **kwargs):
+        classifier.classify_evernote(self.getEvernote(), **kwargs)
+
+    def train(self, **kwargs):
+        classifier.train_evernote(self.getEvernote(), **kwargs)
 
     def _createSearchRequest(self, search=None, tags=None, notebooks=None, date=None, exact_entry=None, content_search=None):
 
@@ -792,6 +800,12 @@ def main(args=None):
         if COMMAND == 'find':
             Notes().find(**ARGS)
 
+        if COMMAND == 'classify':
+            Notes().classify(**ARGS)
+
+        if COMMAND == 'train':
+            Notes().train(**ARGS)
+        
         # Notebooks
         if COMMAND == 'notebook-list':
             Notebooks().list(**ARGS)
