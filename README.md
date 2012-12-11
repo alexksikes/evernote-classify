@@ -16,7 +16,7 @@ Install the excellent [scikit-learn][2] machine learning library:
 
     $ pip install -U scikit-learn
 
-## Example Usage
+## Example of Usage
 
 First you need to login using geeknote:
 
@@ -35,7 +35,7 @@ You can now see the recommendation of the classifier:
 
     $ python geeknote.py classify
 
-## Testing Everything Works
+## Checking Everything Works
 
 Two datasets are provided. The first one comes from [Teddy Note][3] and the
 second one from a sample of the [20 newsgroup dataset][4].
@@ -64,24 +64,21 @@ Additionally you can login into "sandbox_classify" and "sandbox_classify2"
 (password is the same as login). "sandbox_classify" is the account holding the
 Teddy Note dataset. "sandbox_classify2" holds the 20 newsgroup dataset.
 
-## Future / todo
+## Future / Todo
 
-- not just the 5 update notes ... more options
-- more datasets for testing, read from file
-- save to and read from ENML file instead
-  - use xml parser
-  - make_dataset takes ENML file or result
-  - classifier.py takes only the dataset as argument
+- sync notes instead of downloading
+- 2-way sync of files (gnsync is only from local to remote)
+- not just the 5 updated notes ... more options
+- more datasets to play with
 - better documentation (doctest)
 - use logging instead of print
 - use scikit standard namespace
 - train on the classified notes, suggest on the unclassified ones
-- instead of downloading everything, sample a set of notes
-- randomize order of fetch notes for training
 - auto assign to notebooks
 - integrate with existing unit testing framework
 - grid search of best param of classifier
-- notes with diff kind of content (not just text)
+- feature selection
+- notes with diff kinds of content (not just text)
 
 [0]: http://www.geeknote.me/
 [1]: http://www.geeknote.me/install/
