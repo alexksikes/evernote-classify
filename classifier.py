@@ -12,6 +12,7 @@ from sklearn import datasets
 
 from geeknote import out
 from lib.html2text import html2text
+from tools import to_unicode
 
 # features are bag of words weighted by tf-idf
 # for high dimensional and sparse (text data), we use a linear classifier
@@ -39,29 +40,42 @@ def list_notes(gn, limit, start_offset, step=50):
         
     return result    
         
-def fetch_notes(gn, limit, offset=0, save_notes=None):
+def fetch_notes(gn, limit, offset=0, save_notes=None, cache=True):
     # get the list of most recently updated notes
     result = list_notes(gn, limit, offset)
-    gn.getStorage().setSearch(result)
+    o = gn.getStorage()
+    o.setSearch(result)
     
     # get the notebook name assigned to each note
     notebooks = dict((nbk.guid, nbk) for nbk in gn.findNotebooks())
     
     # get the notes ENML content and add notebook name
     for i, note in enumerate(result.notes):
-        gn.loadNoteContent(note)
         note.notebookName = notebooks[note.notebookGuid].name
-        show_note_snippet(note, i)
         
+        # avoid re-downloading note content
+        content = o.getNoteContent(note.guid) if cache else None
+        
+        if content and note.updated == content.updated:
+            note.content = content.content
+        else:
+            gn.loadNoteContent(note)
+            o.setNoteContent(note) if cache else None
+            
+        show_note_snippet(note, i)
+    
     # save the fetched notes for offline testing
     if save_notes:
         print 'Saving fetched notes to %s.' % save_notes
         pickle.dump(result, open(save_notes, 'wb'))
     return result
 
-def train_evernote(gn, count, save_notes=None):
+def train_evernote(gn, count, save_notes=None, clear_cache=False):
 #    out.preloader.stop()
     out.preloader.setMessage('')
+    if clear_cache:
+        print 'Clearing the note content cache.'
+        gn.getStorage().clearNotesContent()
     print 'Fetch recently updated notes, omitting first 5, limiting to %s notes.' % count
     result = fetch_notes(gn, count, 5, save_notes)
     print 'Making a dataset from all these notes.'
@@ -120,7 +134,7 @@ def show_notes_suggestion(result, targets, target_names):
 # we get the title, tags and stripped HTML
 # content coming from Evernote is expected to be UTF-8 encoded
 def note_to_text(note):
-    content = html2text(note.content.decode('utf-8'))
+    content = html2text(to_unicode(note.content))
     title = note.title.decode('utf-8')
     if note.tagNames:
         tags = ('\n'+' | '.join(note.tagNames)).decode('utf-8')

@@ -90,6 +90,24 @@ class Search(Base):
     def __repr__(self):
         return "<Search('{0}')>".format(self.timestamp)
 
+class NoteContent(Base):
+    __tablename__ = 'notes_content'
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(500))
+    content = Column(Text())
+    guid = Column(String(1000), index=True, unique=True)
+    updated = Column(Integer()) # we only check for !=
+    
+    def __init__(self, guid, title, content, updated):
+        self.guid = guid
+        self.title = title.decode('utf-8')
+        self.content = content.decode('utf-8')
+        self.updated = updated
+
+    def __repr__(self):
+        return "<Note('{0}')>".format(self.title.encode('utf-8'))
+
 class Storage(object):
     """
     Class for using database.
@@ -382,3 +400,35 @@ class Storage(object):
         """
         search = self.session.query(Search).first()
         return pickle.loads(search.search_obj)
+        
+#    @logging
+    def setNoteContent(self, note):
+        """
+        Set note content cache.
+        return True if all done
+        return False if something wrong
+        """
+        #! update instead of delete and insert ..
+        self.session.query(NoteContent).filter_by(guid=note.guid).delete()
+        
+        instance = NoteContent(note.guid, note.title, note.content, note.updated)
+        self.session.add(instance)    
+        
+        self.session.commit()
+        return True
+        
+#    @logging
+    def getNoteContent(self, guid):
+        """
+        Get note content cache.
+        return False if something wrong
+        """
+        return self.session.query(NoteContent).filter_by(guid=guid).first()
+
+#    @logging
+    def clearNotesContent(self):
+        """
+        Clears the fetched content notes for all users.
+        """            
+        for item in self.session.query(NoteContent).all():
+            self.session.delete(item)

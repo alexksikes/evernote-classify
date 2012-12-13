@@ -76,3 +76,9 @@ def stdinEncode(data):
         return data.decode(sys.stdin.encoding).encode("utf8")
     except:
         return data
+        
+def to_unicode(s):
+    if isinstance(s, (unicode, type(None))):
+        return s
+    assert isinstance(s, str)
+    return s.decode("utf8")

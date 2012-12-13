@@ -94,8 +94,11 @@ COMMANDS_DICT = {
     "train": {
         "help": "Train a classifier on the most recently updated notes (omitting the first 5).",
         "arguments": {
-            "--count": {"altName": "-cn", "help": "Maximum number of notes to train on (default 300)", "type": int, "default": 300},
+            "--count": {"altName": "-cn", "help": "Maximum number of notes to train on (default 1500)", "type": int, "default": 1500},
             "--save-notes": {"altName": "-sn", "help": "Path to save fetched notes (for offline testing).", "default": False},
+        },
+        "flags": {
+            "--clear-cache": {"altName": "-cc", "help": "Clears the cache (for all users!).", "value": True, "default": False},
         }
     },
     
