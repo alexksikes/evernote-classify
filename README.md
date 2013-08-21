@@ -1,7 +1,7 @@
-geeknote-classify
+evernote-classify
 =================
 
-Geeknote-classify is a fork of [Geeknote][0] which adds automatic
+Evernote-classify is a fork of [Geeknote][0] which adds automatic
 classification of your Evernote notes into notebooks. At the moment the
 program only provides recommendations of last five recently updated notes.
 
